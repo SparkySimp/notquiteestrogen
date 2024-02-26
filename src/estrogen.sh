@@ -25,6 +25,24 @@ ESTROGEN_COLORS=(
 	[reset]="\e[0m"
 )
 
+declare -A ESTROGEN_STYLES
+ESTROGEN_STYLES=(
+	[bold]="\e[1m"
+	[italic]="\e[3m"
+	[underline]="\e[4m"
+	[blink]="\e[5m"
+	[reverse]="\e[7m"
+	[conceal]="\e[8m"
+)
+
+ESTROGEN_LOGH="[${ESTROGEN_COLORS[purple]}estrogen${ESTROGEN_COLORS[reset]}]"
+declare -A ESTROGEN_LOGL
+
+ESTROGEN_LOGL=(
+	[fatal]="${ESTROGEN_COLORS[red]}${ESTROGEN_STYLES[underline]}${ESTROGEN_STYLES[bold]}CRITICAL:${ESTROGEN_COLORS[reset]}"
+	[error]="${ESTROGEN_COLORS[red]}ERROR:${ESTROGEN_COLORS[reset]}"
+	[warn]=
+)
 remove_vars() {
 	# remove all the variables we've set
 	# if they exist
@@ -36,30 +54,33 @@ remove_vars() {
 	unset ESTROGEN_KERNEL_ARGS
 	unset ESTROGEN_VERBOSE
 	unset ESTROGEN_COLORS
+	unset ESTROGEN_STYLES
+	unset ESTROGEN_LOGH
+	unset ESTROGEN_LOGL
 }
 
 # function for bailing out
 bailout() {
-	printf "[estrogen] CRITICAL: "
+	printf "$ESTROGEN_LOGH ${ESTROGEN_LOGL[fatal]} " >/dev/fd/2
 	echo $1 >/dev/fd/2
 	exit $2
 }
 
 # function for printing errors
 log_error() {
-	printf "[estrogen] ERROR: "
+	printf "$ESTROGEN_LOGH ${ESTROGEN_LOGL[warn]} "
 	echo $1 >/dev/fd/2
 }
 
 # function for printing warnings
 log_warning() {
-	printf "[estrogen] WARNING: "
+	printf "$ESTROGEN_LOGH ${ESTROGEN_COLORS[yellow]}WARNING:${ESTROGEN_COLORS[reset]} "
 	echo $1 >/dev/fd/2
 }
 
 # function for printing info
 log_info() {
-	printf "[estrogen] "
+	printf "[estrogen] ${ESTROGEN_STYLES[bold]}INFO:${ESTROGEN_COLORS[reset]} "
 	echo $1
 }
 
